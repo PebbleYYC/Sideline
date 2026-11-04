@@ -5,9 +5,10 @@ enum class League(val label: String, val slug: String) {
     NHL("NHL", "nhl"),
     MLB("MLB", "mlb"),
     NBA("NBA", "nba"),
-    // IIHF events live under tournament-specific slugs on theScore (e.g. "wjc").
-    // Set this to whichever tournament is active.
-    IIHF("IIHF", "wjc"),
+    // No single "IIHF" feed on theScore — international hockey is split across
+    // tournament slugs: "wjhc" (World Juniors, this winter), "wcoh" (World Cup
+    // of Hockey), "wolymhm"/"wolymhw" (Olympics). Pointed at World Juniors.
+    IIHF("IIHF", "wjhc"),
 }
 
 enum class GameState { PRE, LIVE, FINAL }
