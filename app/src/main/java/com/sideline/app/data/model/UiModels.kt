@@ -14,6 +14,7 @@ enum class GameState { PRE, LIVE, FINAL }
 
 data class TeamUi(
     val name: String,
+    val fullName: String,
     val abbreviation: String,
     val colorHex: String?,   // "#041E42" or null
     val logoUrl: String?,
@@ -28,6 +29,8 @@ data class GameUi(
     val statusLine: String,  // "Final (OT)", "7:00 pm"
     val liveClock: String?,  // "12:34" while live
     val liveSegment: String?,// "2nd" while live
+    val venue: String?,      // "Scotiabank Arena"
+    val dateLine: String?,   // "Tue, Nov 4 · 7:00 PM"
 ) {
     val awayWon get() = state == GameState.FINAL && (away.score ?: 0) > (home.score ?: 0)
     val homeWon get() = state == GameState.FINAL && (home.score ?: 0) > (away.score ?: 0)

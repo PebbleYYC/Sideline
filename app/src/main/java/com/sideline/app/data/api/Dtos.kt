@@ -15,6 +15,8 @@ data class EventDto(
     @Json(name = "event_status") val eventStatus: String? = null,
     // RFC-1123, e.g. "Thu, 05 Nov 2026 00:30:00 -0000"
     @Json(name = "game_date") val gameDate: String? = null,
+    val location: String? = null,
+    val stadium: String? = null,
     @Json(name = "home_team") val homeTeam: TeamDto? = null,
     @Json(name = "away_team") val awayTeam: TeamDto? = null,
     @Json(name = "box_score") val boxScore: BoxScoreDto? = null,

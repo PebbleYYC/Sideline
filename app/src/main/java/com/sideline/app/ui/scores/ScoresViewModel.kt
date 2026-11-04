@@ -37,6 +37,10 @@ class ScoresViewModel(
                 val games = repo.games(league)
                 if (games.isEmpty()) ScoresState.Empty(league)
                 else ScoresState.Loaded(league, games)
+            } catch (e: retrofit2.HttpException) {
+                // 404 = no such league feed right now (e.g. IIHF out of tournament) → treat as empty.
+                if (e.code() == 404) ScoresState.Empty(league)
+                else ScoresState.Error("Server error ${e.code()}")
             } catch (e: Exception) {
                 ScoresState.Error(e.message ?: "Couldn't load scores")
             }

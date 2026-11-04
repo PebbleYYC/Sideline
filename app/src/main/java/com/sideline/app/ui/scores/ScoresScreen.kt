@@ -1,5 +1,6 @@
 package com.sideline.app.ui.scores
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -35,6 +36,15 @@ private val FAVORITES = setOf("MTL", "PIT", "VAN")
 @Composable
 fun ScoresScreen(vm: ScoresViewModel = viewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
+    var selected by remember { mutableStateOf<GameUi?>(null) }
+
+    val chosen = selected
+    if (chosen != null) {
+        BackHandler { selected = null }
+        GameDetailScreen(chosen, onBack = { selected = null })
+        return
+    }
+
     Column(Modifier.fillMaxSize().background(Bg).statusBarsPadding()) {
         Header()
         DateRow()
@@ -59,7 +69,7 @@ fun ScoresScreen(vm: ScoresViewModel = viewModel()) {
                 }
             }
             is ScoresState.Loaded -> LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(top = 4.dp, bottom = 24.dp)) {
-                items(s.games, key = { it.id }) { GameCard(it) }
+                items(s.games, key = { it.id }) { game -> GameCard(game) { selected = game } }
             }
         }
     }
@@ -111,7 +121,7 @@ private fun LeagueTabs(selected: League, onSelect: (League) -> Unit) {
 }
 
 @Composable
-private fun GameCard(g: GameUi) {
+private fun GameCard(g: GameUi, onClick: () -> Unit) {
     val ca = parseColor(g.away.colorHex)
     val cb = parseColor(g.home.colorHex)
     Box(
@@ -119,6 +129,7 @@ private fun GameCard(g: GameUi) {
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 5.dp)
             .clip(RoundedCornerShape(16.dp))
+            .clickable { onClick() }
             .background(Card)
             .background(Brush.horizontalGradient(
                 0.0f to ca.copy(alpha = 0.22f), 0.42f to Color.Transparent,
@@ -203,7 +214,7 @@ private fun ColumnScope.CenterBox(content: @Composable () -> Unit) {
     Box(Modifier.weight(1f).fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) { content() }
 }
 
-private fun parseColor(hex: String?): Color = try {
+internal fun parseColor(hex: String?): Color = try {
     if (hex.isNullOrBlank()) Color.Transparent
     else Color(android.graphics.Color.parseColor(if (hex.startsWith("#")) hex else "#$hex"))
 } catch (e: Exception) { Color.Transparent }

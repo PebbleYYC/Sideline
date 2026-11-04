@@ -63,16 +63,26 @@ class ScoresRepository(
             statusLine = statusLine,
             liveClock = prog?.clock,
             liveSegment = prog?.segmentString,
+            venue = stadium ?: location,
+            dateLine = dateLine(gameDate),
         )
     }
 
     private fun TeamDto?.toUi(score: Int?): TeamUi = TeamUi(
         name = this?.name ?: this?.fullName ?: "—",
+        fullName = this?.fullName ?: this?.name ?: "—",
         abbreviation = (this?.abbreviation ?: this?.name?.take(3) ?: "?").uppercase(),
         colorHex = this?.colour1?.let { if (it.startsWith("#")) it else "#$it" },
         logoUrl = this?.logos?.let { it.small ?: it.large ?: it.tiny },
         score = score,
     )
+
+    private fun dateLine(raw: String?): String? = try {
+        if (raw.isNullOrBlank()) null
+        else ZonedDateTime.parse(raw, DateTimeFormatter.RFC_1123_DATE_TIME)
+            .withZoneSameInstant(ZoneId.systemDefault())
+            .format(DATE_FMT)
+    } catch (e: Exception) { null }
 
     /** Parse the RFC-1123 game_date and show the local start time, e.g. "7:00 PM". */
     private fun gameTime(raw: String?): String = try {
@@ -84,5 +94,6 @@ class ScoresRepository(
 
     companion object {
         private val TIME_FMT = DateTimeFormatter.ofPattern("h:mm a")
+        private val DATE_FMT = DateTimeFormatter.ofPattern("EEE, MMM d · h:mm a")
     }
 }
